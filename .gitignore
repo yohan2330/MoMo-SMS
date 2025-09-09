@@ -1,0 +1,6 @@
+data/raw/*
+data/processed/*
+data/logs/*
+__pycache__/
+*.sqlite3
+.env
