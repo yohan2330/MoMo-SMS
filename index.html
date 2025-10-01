@@ -2,13 +2,452 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>MoMo SMS Dashboard</title>
-    <link rel="stylesheet" href="static/styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Money API Tester</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .auth-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .auth-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .input-group input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .btn {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+        
+        .result-section {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .result-section pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .status-success {
+            background: #38ef7d;
+            color: #1e1e1e;
+        }
+        
+        .status-error {
+            background: #f5576c;
+            color: white;
+        }
+        
+        .form-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .form-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .loading.active {
+            display: block;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </head>
 <body>
-    <h1>MoMo SMS Dashboard</h1>
-    <div id="chart"></div>
-    <table id="transactions"></table>
-    <script src="static/dashboard.js"></script>
+    <div class="container">
+        <div class="header">
+            <h1>🏦 Mobile Money API Tester</h1>
+            <p>Test your REST API endpoints with authentication</p>
+        </div>
+        
+        <div class="content">
+            <!-- Authentication Section -->
+            <div class="auth-section">
+                <h3>🔐 Authentication Credentials</h3>
+                <div class="input-group">
+                    <input type="text" id="username" value="admin" placeholder="Username">
+                    <input type="password" id="password" value="password123" placeholder="Password">
+                </div>
+                <small style="color: #666;">Default: admin / password123</small>
+            </div>
+            
+            <!-- Quick Test Buttons -->
+            <h3>🧪 Quick Tests</h3>
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="getAllTransactions()">
+                    📋 GET All Transactions
+                </button>
+                <button class="btn btn-primary" onclick="getOneTransaction()">
+                    🔍 GET Transaction #1
+                </button>
+                <button class="btn btn-danger" onclick="testUnauthorized()">
+                    🚫 Test Unauthorized
+                </button>
+            </div>
+            
+            <!-- Create Transaction Form -->
+            <div class="form-section">
+                <h3>➕ Create New Transaction</h3>
+                <div class="form-group">
+                    <label>Transaction Type:</label>
+                    <select id="createType">
+                        <option value="deposit">Deposit</option>
+                        <option value="withdrawal">Withdrawal</option>
+                        <option value="transfer">Transfer</option>
+                        <option value="payment">Payment</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Amount (RWF):</label>
+                    <input type="number" id="createAmount" value="50000" placeholder="50000">
+                </div>
+                <div class="form-group">
+                    <label>Sender:</label>
+                    <input type="text" id="createSender" value="Test User" placeholder="Sender name">
+                </div>
+                <div class="form-group">
+                    <label>Receiver:</label>
+                    <input type="text" id="createReceiver" value="MTN_MOMO" placeholder="Receiver name">
+                </div>
+                <button class="btn btn-success" onclick="createTransaction()">
+                    ✅ Create Transaction
+                </button>
+            </div>
+            
+            <!-- Update Transaction Form -->
+            <div class="form-section">
+                <h3>✏️ Update Transaction</h3>
+                <div class="form-group">
+                    <label>Transaction ID:</label>
+                    <input type="number" id="updateId" value="1" placeholder="1">
+                </div>
+                <div class="form-group">
+                    <label>New Amount (RWF):</label>
+                    <input type="number" id="updateAmount" value="75000" placeholder="75000">
+                </div>
+                <button class="btn btn-warning" onclick="updateTransaction()">
+                    🔄 Update Transaction
+                </button>
+            </div>
+            
+            <!-- Delete Transaction -->
+            <div class="form-section">
+                <h3>🗑️ Delete Transaction</h3>
+                <div class="form-group">
+                    <label>Transaction ID:</label>
+                    <input type="number" id="deleteId" value="1" placeholder="1">
+                </div>
+                <button class="btn btn-danger" onclick="deleteTransaction()">
+                    ❌ Delete Transaction
+                </button>
+            </div>
+            
+            <!-- Loading Indicator -->
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p style="margin-top: 10px;">Loading...</p>
+            </div>
+            
+            <!-- Results Section -->
+            <div class="result-section" id="results">
+                <div style="color: #888;">
+                    👆 Click a button above to test the API
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const API_URL = 'http://localhost:8000';
+        
+        function getAuthHeaders() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const credentials = btoa(username + ':' + password);
+            return {
+                'Authorization': 'Basic ' + credentials,
+                'Content-Type': 'application/json'
+            };
+        }
+        
+        function showLoading() {
+            document.getElementById('loading').classList.add('active');
+        }
+        
+        function hideLoading() {
+            document.getElementById('loading').classList.remove('active');
+        }
+        
+        function displayResult(status, statusCode, data) {
+            hideLoading();
+            const resultsDiv = document.getElementById('results');
+            const statusClass = statusCode >= 200 && statusCode < 300 ? 'status-success' : 'status-error';
+            
+            resultsDiv.innerHTML = `
+                <div class="status ${statusClass}">
+                    ${status} - ${statusCode}
+                </div>
+                <pre>${JSON.stringify(data, null, 2)}</pre>
+            `;
+        }
+        
+        async function getAllTransactions() {
+            showLoading();
+            try {
+                const response = await fetch(`${API_URL}/transactions`, {
+                    method: 'GET',
+                    headers: getAuthHeaders()
+                });
+                const data = await response.json();
+                displayResult('GET /transactions', response.status, data);
+            } catch (error) {
+                displayResult('Error', 0, { error: error.message });
+            }
+        }
+        
+        async function getOneTransaction() {
+            showLoading();
+            try {
+                const response = await fetch(`${API_URL}/transactions/1`, {
+                    method: 'GET',
+                    headers: getAuthHeaders()
+                });
+                const data = await response.json();
+                displayResult('GET /transactions/1', response.status, data);
+            } catch (error) {
+                displayResult('Error', 0, { error: error.message });
+            }
+        }
+        
+        async function testUnauthorized() {
+            showLoading();
+            try {
+                const response = await fetch(`${API_URL}/transactions`, {
+                    method: 'GET'
+                });
+                const data = await response.json();
+                displayResult('Unauthorized Test', response.status, data);
+            } catch (error) {
+                displayResult('Error', 0, { error: error.message });
+            }
+        }
+        
+        async function createTransaction() {
+            showLoading();
+            const newTransaction = {
+                type: document.getElementById('createType').value,
+                amount: parseFloat(document.getElementById('createAmount').value),
+                sender: document.getElementById('createSender').value,
+                receiver: document.getElementById('createReceiver').value,
+                message: 'Created via web interface'
+            };
+            
+            try {
+                const response = await fetch(`${API_URL}/transactions`, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(newTransaction)
+                });
+                const data = await response.json();
+                displayResult('POST /transactions', response.status, data);
+            } catch (error) {
+                displayResult('Error', 0, { error: error.message });
+            }
+        }
+        
+        async function updateTransaction() {
+            showLoading();
+            const id = document.getElementById('updateId').value;
+            const updates = {
+                amount: parseFloat(document.getElementById('updateAmount').value),
+                message: 'Updated via web interface'
+            };
+            
+            try {
+                const response = await fetch(`${API_URL}/transactions/${id}`, {
+                    method: 'PUT',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(updates)
+                });
+                const data = await response.json();
+                displayResult(`PUT /transactions/${id}`, response.status, data);
+            } catch (error) {
+                displayResult('Error', 0, { error: error.message });
+            }
+        }
+        
+        async function deleteTransaction() {
+            showLoading();
+            const id = document.getElementById('deleteId').value;
+            
+            if (!confirm(`Are you sure you want to delete transaction #${id}?`)) {
+                hideLoading();
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/transactions/${id}`, {
+                    method: 'DELETE',
+                    headers: getAuthHeaders()
+                });
+                const data = await response.json();
+                displayResult(`DELETE /transactions/${id}`, response.status, data);
+            } catch (error) {
+                displayResult('Error', 0, { error: error.message });
+            }
+        }
+    </script>
 </body>
 </html>

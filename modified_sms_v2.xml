@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sms_records>
+    <sms type="withdrawal" amount="200000" sender="Olivia Martinez" receiver="ATM_REMERA" timestamp="2024-03-14T17:25:00">
+        Withdrawal of 200,000 RWF from ATM_REMERA successful. Remaining balance: 34,185 RWF. Ref: WD290730
+    </sms>
+    <sms type="payment" amount="387000" sender="Alice Brown" receiver="Simba_Supermarket" timestamp="2024-04-21T22:15:00">
+        Payment of 387,000 RWF to Simba_Supermarket successful. Thank you for your purchase. Ref: PAY643198
+    </sms>
+    <sms type="payment" amount="162000" sender="John Doe" receiver="UTC_Mall" timestamp="2024-02-21T12:55:00">
+        Payment of 162,000 RWF to UTC_Mall successful. Thank you for your purchase. Ref: PAY153362
+    </sms>
+</sms_records>
